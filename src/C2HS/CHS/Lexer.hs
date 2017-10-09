@@ -712,20 +712,13 @@ cpp = directive
                     s, Nothing)
 
 adjustPosByCLinePragma :: String -> Position -> Position
-adjustPosByCLinePragma str pos = adjustPos fname' row' pos
+adjustPosByCLinePragma str pos = position (posOffset pos) fname row' 1 (posParent pos)
   where
-    fname           = posFile pos
-    str'            = dropWhite str
-    (rowStr, str'') = span isDigit str'
-    row'            = read rowStr
-    str'''          = dropWhite str''
-    fnameStr        = takeWhile (/= '"') . drop 1 $ str'''
-    fname'          | null str''' || head str''' /= '"' = fname
-                    -- try and get more sharing of file name strings
-                    | fnameStr == fname                 = fname
-                    | otherwise                         = fnameStr
-    --
-    dropWhite = dropWhile (\c -> c == ' ' || c == '\t')
+    fname        = posFile pos
+    str'         = dropWhite str
+    (rowStr, _)  = span isDigit str'
+    row'         = read rowStr
+    dropWhite    = dropWhile (\c -> c == ' ' || c == '\t')
 
 -- | the binding hook lexer
 --
